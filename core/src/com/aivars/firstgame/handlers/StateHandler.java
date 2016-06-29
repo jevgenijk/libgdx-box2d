@@ -45,7 +45,7 @@ public class StateHandler {
     private State getState(StateName state) {
         switch (state) {
             case SPLASH:
-                return new SplashState(this);
+                return new GameState(this); // SplashState
             case GAME:
                 return new GameState(this);
         }

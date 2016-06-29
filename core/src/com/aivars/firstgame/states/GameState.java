@@ -48,7 +48,6 @@ public class GameState extends State implements InputProcessor {
         ballTexture = new Texture("ball.png");
         sprite = new Sprite(ballTexture);
 
-        camera.setToOrtho(false, scale(Constants.WIDTH), scale(Constants.HEIGHT));
     }
 
     private void createJoint(int scaleB) {
@@ -87,8 +86,8 @@ public class GameState extends State implements InputProcessor {
     public void update(float dt) {
         world.step(dt, 6, 2);
 
-        //camera.update();
-        //spriteBatch.setProjectionMatrix(camera.combined);
+        camera.update();
+        spriteBatch.setProjectionMatrix(camera.combined);
     }
 
     @Override
