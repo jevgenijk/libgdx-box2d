@@ -36,7 +36,7 @@ public class Application extends ApplicationAdapter {
 
     @Override
     public void resize(int width, int height) {
-        stateHandler.resize((int) (width / SCALE), (int) (height / SCALE));
+        stateHandler.resize(width, height);
     }
 
     public SpriteBatch getSpriteBatch() {
