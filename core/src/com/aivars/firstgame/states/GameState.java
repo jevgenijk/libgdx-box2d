@@ -43,11 +43,12 @@ public class GameState extends State implements InputProcessor {
     private Texture ballTexture;
     private Sprite sprite;
     private int hitCount = 0;
+    private ContactHandler contactHandler = new ContactHandler();
 
     public GameState(StateHandler gameStateHandler) {
         super(gameStateHandler);
         world = new World(new Vector2(0, -9.81f), true);
-        world.setContactListener(new ContactHandler());
+        world.setContactListener(contactHandler);
         debuger = new Box2DDebugRenderer();
         Gdx.input.setInputProcessor(this);
 
@@ -98,7 +99,12 @@ public class GameState extends State implements InputProcessor {
     @Override
     public void update(float dt) {
         world.step(dt, 6, 2);
-        disposeBodies();
+
+        Array<Body> bodies = contactHandler.getRemovableBodies();
+        for (int i = 0; i < bodies.size; i++) {
+            world.destroyBody(bodies.get(i));
+        }
+        bodies.clear();
 
         double spikeAngle = Utils.calcRotationAngleInDegrees(pivot.getPosition().x, pivot.getPosition().y, spike.getPosition().x, spike.getPosition().y);
         System.out.println(spikeAngle);
@@ -135,7 +141,6 @@ public class GameState extends State implements InputProcessor {
             sensorBody.createFixture(fixtureDef);
             fixtureDef.shape.dispose();
             sensorBody.setUserData(new BodyUserData(body));
-            body.setUserData(new BodyUserData(sensorBody));
 
             lastAngle = (int) (spikeAngle + 30);
         }
@@ -157,26 +162,6 @@ public class GameState extends State implements InputProcessor {
         debuger.render(world, camera.combined.scl(Constants.PPM));
         camera.update();
         spriteBatch.setProjectionMatrix(camera.combined);
-    }
-
-    public void disposeBodies() {
-        Array<Body> worldBodies = new Array<Body>();
-        world.getBodies(worldBodies);
-
-        Iterator<Body> i = worldBodies.iterator();
-        Body node = i.next();
-        while (i.hasNext()) {
-            Body oBj = node;
-            node = i.next();
-            BodyUserData data = (BodyUserData) oBj.getUserData();
-            if (data != null) {
-                BodyUserData sensorData = (BodyUserData) data.getObstacle().getUserData();
-                if (sensorData.isDisposable()) {
-                    world.destroyBody(oBj);
-                    world.destroyBody(data.getObstacle());
-                }
-            }
-        }
     }
 
     @Override

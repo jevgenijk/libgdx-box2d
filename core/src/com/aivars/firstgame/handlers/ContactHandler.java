@@ -11,6 +11,11 @@ public class ContactHandler implements ContactListener {
 
     private Array<Body> removableBodies;
 
+    public ContactHandler() {
+        super();
+        removableBodies = new Array<Body>();
+    }
+
     public void beginContact(Contact c) {
         Fixture fa = c.getFixtureA();
         Fixture fb = c.getFixtureB();
@@ -18,19 +23,23 @@ public class ContactHandler implements ContactListener {
         if (fa.isSensor()) {
             if (fa.getBody().getUserData() != null) {
                 BodyUserData userData = (BodyUserData) fa.getBody().getUserData();
-                userData.setDisposable(true);
-                fa.getBody().setUserData(userData);
+                removableBodies.add(userData.getObstacle());
+                removableBodies.add(fa.getBody());
             }
         }
 
         if (fb.isSensor()) {
             if (fb.getBody().getUserData() != null) {
                 BodyUserData userData = (BodyUserData) fb.getBody().getUserData();
-                userData.setDisposable(true);
-                fb.getBody().setUserData(userData);
+                removableBodies.add(userData.getObstacle());
+                removableBodies.add(fb.getBody());
             }
         }
 
+    }
+
+    public Array<Body> getRemovableBodies() {
+        return removableBodies;
     }
 
     public void endContact(Contact c) {
