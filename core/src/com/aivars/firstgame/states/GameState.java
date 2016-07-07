@@ -21,7 +21,18 @@ import static com.aivars.firstgame.utils.Utils.scale;
 
 public class GameState extends State {
 
+    /**
+     * TODO:
+     * 1. Top highscore
+     * 2. Resetting game
+     * 3. Styling/images
+     * 4. Randomize obstacle position - inside/outside
+     * 5. Randomize obstacle distance
+     * . Refactoring
+     * */
+
     private static boolean isBallOutside = true;
+    private int lastAngle = 360;
     private static World world;
     private static RevoluteJoint revoluteJoint;
     private static Body pivot;
@@ -30,17 +41,16 @@ public class GameState extends State {
     private ContactHandler contactHandler = new ContactHandler();
     private InputHandler inputHandler = new InputHandler();
     private BitmapFont font = new BitmapFont();
-    private Box2DDebugRenderer debuger;
+    private Box2DDebugRenderer debugger;
     private Texture ballTexture;
     private Sprite sprite;
-    private int hitCount = 0;
-    private int lastAngle = 270;
+    private int circleCount = -1;
 
     public GameState(StateHandler gameStateHandler) {
         super(gameStateHandler);
         world = new World(new Vector2(0, -9.81f), true);
         world.setContactListener(contactHandler);
-        debuger = new Box2DDebugRenderer();
+        debugger = new Box2DDebugRenderer();
         Gdx.input.setInputProcessor(inputHandler);
 
         pivot = createCircle(world, BodyDef.BodyType.StaticBody, scale(Constants.WIDTH / 2), scale(Constants.HEIGHT / 2), BIG_CIRCLE_RADIUS);
@@ -87,9 +97,10 @@ public class GameState extends State {
 
         //Add new obstacles
         double spikeAngle = Utils.calcRotationAngleInDegrees(pivot.getPosition().x, pivot.getPosition().y, spike.getPosition().x, spike.getPosition().y);
-        System.out.println(spikeAngle);
+        //Resetting circle angle if current spike angle is somewhere between 0 and 5 degrees
         if (lastAngle >= 360 && spikeAngle > 0 && spikeAngle < 5) {
             lastAngle = 0;
+            circleCount++;
         }
 
         if (lastAngle < spikeAngle) {
@@ -133,19 +144,19 @@ public class GameState extends State {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         spriteBatch.begin();
-        font.draw(application.getSpriteBatch(), "Count: " + hitCount, 30, Constants.HEIGHT - 30);
+        font.draw(application.getSpriteBatch(), "Count: " + (circleCount == -1 ? 0 : circleCount), 30, Constants.HEIGHT - 30);
         int circleSize = 16;
         spriteBatch.draw(sprite, spike.getPosition().x * Constants.PPM - (circleSize / 2), spike.getPosition().y * Constants.PPM - (circleSize / 2), circleSize, circleSize);
         spriteBatch.end();
 
-        debuger.render(world, camera.combined.scl(Constants.PPM));
+        debugger.render(world, camera.combined.scl(Constants.PPM));
         camera.update();
         spriteBatch.setProjectionMatrix(camera.combined);
     }
 
     @Override
     public void dispose() {
-        debuger.dispose();
+        debugger.dispose();
         world.dispose();
         ballTexture.dispose();
     }
