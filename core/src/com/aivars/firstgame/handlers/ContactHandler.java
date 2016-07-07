@@ -5,7 +5,6 @@ import com.aivars.firstgame.model.Obstacle;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 
-import static com.aivars.firstgame.states.GameState.obstacles;
 
 public class ContactHandler implements ContactListener {
 

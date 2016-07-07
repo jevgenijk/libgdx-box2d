@@ -1,4 +1,4 @@
-package com.aivars.firstgame.test;
+package com.aivars.firstgame.utils;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.Body;

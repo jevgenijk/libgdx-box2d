@@ -1,4 +1,6 @@
-package com.aivars.firstgame;
+package com.aivars.firstgame.utils;
+
+import com.aivars.firstgame.Constants;
 
 public class Utils {
 
@@ -8,17 +10,6 @@ public class Utils {
 
     public static float scale(float x) {
         return x / Constants.PPM;
-    }
-
-    public static double getAngle(double angle) {
-        if (angle <= 0) {
-            angle += 360;
-        }
-        if (angle > 360) {
-            angle -= 360;
-        }
-
-        return angle;
     }
 
     public static double calcRotationAngleInDegrees(float x,float y, float x2, float y2) {
