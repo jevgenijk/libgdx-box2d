@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
@@ -25,8 +24,8 @@ public class GameState extends State {
      * TODO:
      * 1. Top highscore
      * 2. Resetting game
-     * 3. Styling/images
-     * 4. Randomize obstacle position - inside/outside
+     * +3. Styling/images
+     * +4. Randomize obstacle position - inside/outside
      * 5. Randomize obstacle distance
      * . Refactoring
      */
@@ -115,6 +114,7 @@ public class GameState extends State {
         }
 
         if (lastAngle < spikeAngle) {
+            int obstaclePosition = (int) (Math.random() * 2 + 1);
             int x = (int) (circle.getPosition().x * Constants.PPM + (BIG_CIRCLE_RADIUS + 10) * Math.cos(spikeAngle * Math.PI / 180F));
             int y = (int) (circle.getPosition().y * Constants.PPM + (BIG_CIRCLE_RADIUS + 10) * Math.sin(spikeAngle * Math.PI / 180F));
             int sensorX = (int) (circle.getPosition().x * Constants.PPM + (BIG_CIRCLE_RADIUS - 10) * Math.cos(spikeAngle * Math.PI / 180F));
@@ -122,7 +122,11 @@ public class GameState extends State {
 
             BodyDef bodyDef = new BodyDef();
             bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set(scale(x), scale(y));
+            if (obstaclePosition == 1) {
+                bodyDef.position.set(scale(x), scale(y));
+            } else {
+                bodyDef.position.set(scale(sensorX), scale(sensorY));
+            }
             bodyDef.angle = (float) Math.toRadians(spikeAngle + 90);
             Body body = world.createBody(bodyDef);
             FixtureDef fixtureDef = new FixtureDef();
@@ -137,7 +141,11 @@ public class GameState extends State {
 
             BodyDef sensorBodyDef = new BodyDef();
             sensorBodyDef.type = BodyDef.BodyType.StaticBody;
-            sensorBodyDef.position.set(scale(sensorX), scale(sensorY));
+            if (obstaclePosition == 1) {
+                sensorBodyDef.position.set(scale(sensorX), scale(sensorY));
+            } else {
+                sensorBodyDef.position.set(scale(x), scale(y));
+            }
             sensorBodyDef.angle = (float) Math.toRadians(spikeAngle + 90);
             Body sensorBody = world.createBody(sensorBodyDef);
             fixtureDef.isSensor = true;
@@ -145,18 +153,18 @@ public class GameState extends State {
             fixtureDef.shape.dispose();
             sensorBody.setUserData(body);
 
-            lastAngle = (int) (spikeAngle + 30);
+            lastAngle = (int) (spikeAngle + ANGLE_DISTANCE_BETWEEN_OBSTACLES);
         }
 
     }
 
     @Override
     public void render() {
-        Gdx.gl.glClearColor(255/255f, 252/255f, 252/255f, 1f);
+        Gdx.gl.glClearColor(255 / 255f, 252 / 255f, 252 / 255f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         spriteBatch.begin();
-        font.setColor(69/255f, 68/255f, 64/255f, 1f);
+        font.setColor(69 / 255f, 68 / 255f, 64 / 255f, 1f);
         font.draw(application.getSpriteBatch(), "SCORE: " + (circleCount == -1 ? 0 : circleCount), 30, Constants.HEIGHT - 30);
         int circleSize = 178;
         spriteBatch.draw(circleSprite, circle.getPosition().x * Constants.PPM - (circleSize / 2), circle.getPosition().y * Constants.PPM - (circleSize / 2), circleSize, circleSize);
@@ -170,8 +178,8 @@ public class GameState extends State {
         for (Body body : bodies) {
             if (body.getUserData() != null && body.getUserData().equals("obstacle")) {
                 obstacleSprite.setRotation((float) Math.toDegrees(body.getAngle()));
-                obstacleSprite.setSize(6,20);
-                obstacleSprite.setPosition(body.getPosition().x * Constants.PPM  - (6 / 2), body.getPosition().y * Constants.PPM - (20 / 2));
+                obstacleSprite.setSize(6, 20);
+                obstacleSprite.setPosition(body.getPosition().x * Constants.PPM - (6 / 2), body.getPosition().y * Constants.PPM - (20 / 2));
                 obstacleSprite.draw(spriteBatch);
             }
         }
