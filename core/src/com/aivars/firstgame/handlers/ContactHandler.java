@@ -1,7 +1,5 @@
 package com.aivars.firstgame.handlers;
 
-import com.aivars.firstgame.model.BodyUserData;
-import com.aivars.firstgame.model.Obstacle;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 
@@ -21,16 +19,16 @@ public class ContactHandler implements ContactListener {
 
         if (fa.isSensor()) {
             if (fa.getBody().getUserData() != null) {
-                BodyUserData userData = (BodyUserData) fa.getBody().getUserData();
-                removableBodies.add(userData.getObstacle());
+                Body userData = (Body) fa.getBody().getUserData();
+                removableBodies.add(userData);
                 removableBodies.add(fa.getBody());
             }
         }
 
         if (fb.isSensor()) {
             if (fb.getBody().getUserData() != null) {
-                BodyUserData userData = (BodyUserData) fb.getBody().getUserData();
-                removableBodies.add(userData.getObstacle());
+                Body userData = (Body) fb.getBody().getUserData();
+                removableBodies.add(userData);
                 removableBodies.add(fb.getBody());
             }
         }

@@ -7,8 +7,8 @@ public class Constants {
     public static final int WIDTH = 800;
     public static final int HEIGHT = 600;
 
-    public static final int BIG_CIRCLE_RADIUS = 120;
+    public static final int BIG_CIRCLE_RADIUS = 85;
     public static final int SMALL_CIRCLE_RADIUS = 5;
-    public static final int BALL_OUTER_LENGTH = 130;
-    public static final int BALL_INNER_LENGTH = 105;
+    public static final int BALL_OUTER_LENGTH = 100;
+    public static final int BALL_INNER_LENGTH = 70;
 }
