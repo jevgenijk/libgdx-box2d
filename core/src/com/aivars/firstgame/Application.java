@@ -1,8 +1,10 @@
 package com.aivars.firstgame;
 
+import com.aivars.firstgame.handlers.AssetHandler;
 import com.aivars.firstgame.handlers.StateHandler;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -12,6 +14,8 @@ public class Application extends ApplicationAdapter {
 
     private SpriteBatch spriteBatch;
     private OrthographicCamera camera;
+    private Preferences preferences;
+    private AssetHandler assetHandler;
 
     private StateHandler stateHandler;
 
@@ -19,6 +23,7 @@ public class Application extends ApplicationAdapter {
     public void create() {
         spriteBatch = new SpriteBatch();
         camera = new OrthographicCamera();
+        assetHandler = new AssetHandler();
         stateHandler = new StateHandler(this);
     }
 
@@ -45,5 +50,13 @@ public class Application extends ApplicationAdapter {
 
     public OrthographicCamera getCamera() {
         return camera;
+    }
+
+    public Preferences getPreferences(){
+        return preferences;
+    }
+
+    public AssetHandler getAssetHandler(){
+        return assetHandler;
     }
 }

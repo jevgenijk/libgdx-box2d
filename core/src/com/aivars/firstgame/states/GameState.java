@@ -7,9 +7,9 @@ import com.aivars.firstgame.handlers.StateHandler;
 import com.aivars.firstgame.utils.RevoluteJoint;
 import com.aivars.firstgame.utils.Utils;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -23,7 +23,7 @@ public class GameState extends State {
     /**
      * TODO:
      * 1. Top highscore
-     * 2. Resetting game
+     * 2. Resetting game / SPLASH SCREEN
      * +3. Styling/images
      * +4. Randomize obstacle position - inside/outside
      * 5. Randomize obstacle distance
@@ -39,22 +39,17 @@ public class GameState extends State {
     private int lastAngle = 360;
     private ContactHandler contactHandler = new ContactHandler();
     private InputHandler inputHandler = new InputHandler();
-    private BitmapFont font = new BitmapFont();
+    private Preferences preferences;
     private Box2DDebugRenderer debugger;
     private int circleCount = -1;
-    private Texture ballTexture;
-    private Sprite ballSprite;
-    private Texture obstacleTexture;
-    private Sprite obstacleSprite;
-    private Texture circleTexture;
-    private Sprite circleSprite;
+
 
     public GameState(StateHandler gameStateHandler) {
         super(gameStateHandler);
         world = new World(new Vector2(0, -9.81f), true);
         world.setContactListener(contactHandler);
+        preferences = gameStateHandler.getApplication().getPreferences();
         debugger = new Box2DDebugRenderer();
-
         Gdx.input.setInputProcessor(inputHandler);
 
         circle = createCircle(world, BodyDef.BodyType.StaticBody, scale(Constants.WIDTH / 2), scale(Constants.HEIGHT / 2), BIG_CIRCLE_RADIUS);
@@ -63,15 +58,6 @@ public class GameState extends State {
         massData.I = (float) 1;
         ball.setMassData(massData);
         createJoint(BALL_OUTER_LENGTH);
-
-        ballTexture = new Texture("ball.png");
-        ballSprite = new Sprite(ballTexture);
-
-        obstacleTexture = new Texture("obstacle.png");
-        obstacleSprite = new Sprite(obstacleTexture);
-
-        circleTexture = new Texture("circle.png");
-        circleSprite = new Sprite(circleTexture);
     }
 
     public static boolean isBallOutside() {
@@ -97,13 +83,7 @@ public class GameState extends State {
     @Override
     public void update(float dt) {
         world.step(dt, 6, 2);
-
-        // Remove obstacles
-        Array<Body> bodies = contactHandler.getRemovableBodies();
-        for (int i = 0; i < bodies.size; i++) {
-            world.destroyBody(bodies.get(i));
-        }
-        bodies.clear();
+        cleanup();
 
         //Add new obstacles
         double spikeAngle = Utils.calcRotationAngleInDegrees(circle.getPosition().x, circle.getPosition().y, ball.getPosition().x, ball.getPosition().y);
@@ -167,16 +147,17 @@ public class GameState extends State {
         font.setColor(69 / 255f, 68 / 255f, 64 / 255f, 1f);
         font.draw(application.getSpriteBatch(), "SCORE: " + (circleCount == -1 ? 0 : circleCount), 30, Constants.HEIGHT - 30);
         int circleSize = 178;
-        spriteBatch.draw(circleSprite, circle.getPosition().x * Constants.PPM - (circleSize / 2), circle.getPosition().y * Constants.PPM - (circleSize / 2), circleSize, circleSize);
+        spriteBatch.draw(assetHandler.getSprite("circle.png"), circle.getPosition().x * Constants.PPM - (circleSize / 2), circle.getPosition().y * Constants.PPM - (circleSize / 2), circleSize, circleSize);
 
         int ballSize = 16;
-        spriteBatch.draw(ballSprite, ball.getPosition().x * Constants.PPM - (ballSize / 2), ball.getPosition().y * Constants.PPM - (ballSize / 2), ballSize, ballSize);
+        spriteBatch.draw(assetHandler.getSprite("ball.png"), ball.getPosition().x * Constants.PPM - (ballSize / 2), ball.getPosition().y * Constants.PPM - (ballSize / 2), ballSize, ballSize);
 
 
         Array<Body> bodies = new Array<Body>();
         world.getBodies(bodies);
         for (Body body : bodies) {
             if (body.getUserData() != null && body.getUserData().equals("obstacle")) {
+                Sprite obstacleSprite = assetHandler.getSprite("obstacle.png");
                 obstacleSprite.setRotation((float) Math.toDegrees(body.getAngle()));
                 obstacleSprite.setSize(6, 20);
                 obstacleSprite.setPosition(body.getPosition().x * Constants.PPM - (6 / 2), body.getPosition().y * Constants.PPM - (20 / 2));
@@ -196,7 +177,15 @@ public class GameState extends State {
     public void dispose() {
         debugger.dispose();
         world.dispose();
-        ballTexture.dispose();
+        assetHandler.dispose();
+    }
+
+    public void cleanup() {
+        Array<Body> bodies = contactHandler.getRemovableBodies();
+        for (int i = 0; i < bodies.size; i++) {
+            world.destroyBody(bodies.get(i));
+        }
+        bodies.clear();
     }
 
     public Body createCircle(World world, BodyDef.BodyType bodyType, float posX, float posY,

@@ -13,6 +13,7 @@ public class StateHandler {
 
     private Application application;
     private Stack<State> states;
+
     public StateHandler(Application application) {
         this.application = application;
         this.states = new Stack<State>();

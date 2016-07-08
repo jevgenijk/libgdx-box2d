@@ -1,8 +1,10 @@
 package com.aivars.firstgame.states;
 
 import com.aivars.firstgame.Application;
+import com.aivars.firstgame.handlers.AssetHandler;
 import com.aivars.firstgame.handlers.StateHandler;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public abstract class State {
@@ -10,12 +12,15 @@ public abstract class State {
     protected Application application;
     protected SpriteBatch spriteBatch;
     protected OrthographicCamera camera;
+    protected AssetHandler assetHandler;
+    protected BitmapFont font = new BitmapFont();
 
     protected State(StateHandler stateHandler) {
         this.stateHandler = stateHandler;
         this.application = stateHandler.getApplication();
         this.spriteBatch = application.getSpriteBatch();
         this.camera = application.getCamera();
+        this.assetHandler = application.getAssetHandler();
     }
 
     public void resize(int w, int h) {
