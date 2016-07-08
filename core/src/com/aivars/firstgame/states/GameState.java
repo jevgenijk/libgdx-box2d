@@ -1,15 +1,16 @@
 package com.aivars.firstgame.states;
 
 import com.aivars.firstgame.Constants;
+import com.aivars.firstgame.handlers.AssetHandler;
 import com.aivars.firstgame.handlers.ContactHandler;
 import com.aivars.firstgame.handlers.InputHandler;
 import com.aivars.firstgame.handlers.StateHandler;
+import com.aivars.firstgame.utils.BodyFactory;
 import com.aivars.firstgame.utils.RevoluteJoint;
 import com.aivars.firstgame.utils.Utils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -20,43 +21,48 @@ import static com.aivars.firstgame.utils.Utils.scale;
 
 public class GameState extends State {
 
+    public static int circleCount = -1;
+    public static boolean gameOver = false;
     /**
      * TODO:
      * 1. Top highscore
      * 2. Resetting game / SPLASH SCREEN
-     * +3. Styling/images
-     * +4. Randomize obstacle position - inside/outside
-     * 5. Randomize obstacle distance
-     * . Refactoring
+     * 3. Randomize obstacle distance
+     * 4. Refactoring
      */
 
     private static boolean isBallOutside = true;
-    private static World world;
-    private static RevoluteJoint revoluteJoint;
-    private static Body circle;
-    private static Body ball;
-    private static Joint joint;
+    private World world;
+    private RevoluteJoint revoluteJoint;
+    private Body circle;
+    private Body ball;
+    private Joint joint;
+    private boolean debugging = false;
     private int lastAngle = 360;
     private ContactHandler contactHandler = new ContactHandler();
-    private InputHandler inputHandler = new InputHandler();
+    private InputHandler inputHandler;
+    private BodyFactory bodyFactory;
     private Preferences preferences;
     private Box2DDebugRenderer debugger;
-    private int circleCount = -1;
-
 
     public GameState(StateHandler gameStateHandler) {
         super(gameStateHandler);
+        gameOver = false;
+        assetHandler.load();
         world = new World(new Vector2(0, -9.81f), true);
+        bodyFactory = new BodyFactory(world);
         world.setContactListener(contactHandler);
         preferences = gameStateHandler.getApplication().getPreferences();
         debugger = new Box2DDebugRenderer();
+        inputHandler = new InputHandler(this);
         Gdx.input.setInputProcessor(inputHandler);
 
-        circle = createCircle(world, BodyDef.BodyType.StaticBody, scale(Constants.WIDTH / 2), scale(Constants.HEIGHT / 2), BIG_CIRCLE_RADIUS);
-        ball = createCircle(world, BodyDef.BodyType.DynamicBody, 0, 0, SMALL_CIRCLE_RADIUS);
+        circle = bodyFactory.createCircle(world, BodyDef.BodyType.StaticBody, scale(Constants.WIDTH / 2), scale(Constants.HEIGHT / 2), BIG_CIRCLE_RADIUS);
+        ball = bodyFactory.createCircle(world, BodyDef.BodyType.DynamicBody, 0, 0, SMALL_CIRCLE_RADIUS);
         MassData massData = new MassData();
         massData.I = (float) 1;
         ball.setMassData(massData);
+
         createJoint(BALL_OUTER_LENGTH);
     }
 
@@ -68,7 +74,15 @@ public class GameState extends State {
         isBallOutside = isOutside;
     }
 
-    public static void createJoint(int scaleB) {
+    public static int getCircleCount() {
+        return circleCount;
+    }
+
+    public static void setGameOver(boolean status) {
+        gameOver = status;
+    }
+
+    public void createJoint(int scaleB) {
         if (joint != null) {
             world.destroyJoint(joint);
         }
@@ -83,9 +97,8 @@ public class GameState extends State {
     @Override
     public void update(float dt) {
         world.step(dt, 6, 2);
-        cleanup();
+        disposeBodies();
 
-        //Add new obstacles
         double spikeAngle = Utils.calcRotationAngleInDegrees(circle.getPosition().x, circle.getPosition().y, ball.getPosition().x, ball.getPosition().y);
         //Resetting circle angle if current spike angle is somewhere between 0 and 5 degrees
         if (lastAngle >= 360 && spikeAngle > 0 && spikeAngle < 5) {
@@ -94,48 +107,27 @@ public class GameState extends State {
         }
 
         if (lastAngle < spikeAngle) {
-            int obstaclePosition = (int) (Math.random() * 2 + 1);
+            int obstacleRandomPosition = (int) (Math.random() * 2 + 1);
             int x = (int) (circle.getPosition().x * Constants.PPM + (BIG_CIRCLE_RADIUS + 10) * Math.cos(spikeAngle * Math.PI / 180F));
             int y = (int) (circle.getPosition().y * Constants.PPM + (BIG_CIRCLE_RADIUS + 10) * Math.sin(spikeAngle * Math.PI / 180F));
             int sensorX = (int) (circle.getPosition().x * Constants.PPM + (BIG_CIRCLE_RADIUS - 10) * Math.cos(spikeAngle * Math.PI / 180F));
             int sensorY = (int) (circle.getPosition().y * Constants.PPM + (BIG_CIRCLE_RADIUS - 10) * Math.sin(spikeAngle * Math.PI / 180F));
 
-            BodyDef bodyDef = new BodyDef();
-            bodyDef.type = BodyDef.BodyType.StaticBody;
-            if (obstaclePosition == 1) {
-                bodyDef.position.set(scale(x), scale(y));
-            } else {
-                bodyDef.position.set(scale(sensorX), scale(sensorY));
-            }
-            bodyDef.angle = (float) Math.toRadians(spikeAngle + 90);
-            Body body = world.createBody(bodyDef);
-            FixtureDef fixtureDef = new FixtureDef();
-            fixtureDef.density = 3;
-            fixtureDef.restitution = 0.1f;
-            fixtureDef.friction = 0.8f;
-            PolygonShape poly = new PolygonShape();
-            poly.setAsBox(scale(3), scale(10));
-            fixtureDef.shape = poly;
-            body.createFixture(fixtureDef);
-            body.setUserData("obstacle");
+            Vector2 obstaclePosition = obstacleRandomPosition == 1 ? new Vector2(scale(x), scale(y)) : new Vector2(scale(sensorX), scale(sensorY));
+            Vector2 sensorPosition = obstacleRandomPosition == 1 ? new Vector2(scale(sensorX), scale(sensorY)) : new Vector2(scale(x), scale(y));
+            float angle = (float) Math.toRadians(spikeAngle + 90);
+            float obstacleWidth = scale(3);
+            float obstacleHeight = scale(10);
 
-            BodyDef sensorBodyDef = new BodyDef();
-            sensorBodyDef.type = BodyDef.BodyType.StaticBody;
-            if (obstaclePosition == 1) {
-                sensorBodyDef.position.set(scale(sensorX), scale(sensorY));
-            } else {
-                sensorBodyDef.position.set(scale(x), scale(y));
-            }
-            sensorBodyDef.angle = (float) Math.toRadians(spikeAngle + 90);
-            Body sensorBody = world.createBody(sensorBodyDef);
-            fixtureDef.isSensor = true;
-            sensorBody.createFixture(fixtureDef);
-            fixtureDef.shape.dispose();
-            sensorBody.setUserData(body);
+            Body obstacleBody = bodyFactory.createRectangle(BodyDef.BodyType.StaticBody, obstaclePosition, angle, obstacleWidth, obstacleHeight, "obstacle", false);
+            Body sensorBody = bodyFactory.createRectangle(BodyDef.BodyType.StaticBody, sensorPosition, angle, obstacleWidth, obstacleHeight, obstacleBody, true);
 
             lastAngle = (int) (spikeAngle + ANGLE_DISTANCE_BETWEEN_OBSTACLES);
         }
 
+        if (gameOver) {
+            stateHandler.setState(StateHandler.StateName.PAUSE);
+        }
     }
 
     @Override
@@ -147,6 +139,7 @@ public class GameState extends State {
         font.setColor(69 / 255f, 68 / 255f, 64 / 255f, 1f);
         font.draw(application.getSpriteBatch(), "SCORE: " + (circleCount == -1 ? 0 : circleCount), 30, Constants.HEIGHT - 30);
         int circleSize = 178;
+        
         spriteBatch.draw(assetHandler.getSprite("circle.png"), circle.getPosition().x * Constants.PPM - (circleSize / 2), circle.getPosition().y * Constants.PPM - (circleSize / 2), circleSize, circleSize);
 
         int ballSize = 16;
@@ -165,10 +158,11 @@ public class GameState extends State {
             }
         }
 
-
         spriteBatch.end();
 
-        //debugger.render(world, camera.combined.scl(Constants.PPM));
+        if (debugging) {
+            debugger.render(world, camera.combined.scl(Constants.PPM));
+        }
         camera.update();
         spriteBatch.setProjectionMatrix(camera.combined);
     }
@@ -180,32 +174,12 @@ public class GameState extends State {
         assetHandler.dispose();
     }
 
-    public void cleanup() {
+    private void disposeBodies() {
         Array<Body> bodies = contactHandler.getRemovableBodies();
         for (int i = 0; i < bodies.size; i++) {
             world.destroyBody(bodies.get(i));
         }
         bodies.clear();
-    }
-
-    public Body createCircle(World world, BodyDef.BodyType bodyType, float posX, float posY,
-                             float radius) {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = bodyType;
-        bodyDef.position.set(posX, posY);
-        bodyDef.angle = 0;
-
-        Body body = world.createBody(bodyDef);
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.density = 1;
-        fixtureDef.restitution = 1;
-        fixtureDef.friction = 0;
-        fixtureDef.shape = new CircleShape();
-        fixtureDef.shape.setRadius(scale(radius));
-
-        body.createFixture(fixtureDef);
-        fixtureDef.shape.dispose();
-        return body;
     }
 
 }

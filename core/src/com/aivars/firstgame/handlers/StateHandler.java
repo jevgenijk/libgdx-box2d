@@ -1,9 +1,7 @@
 package com.aivars.firstgame.handlers;
 
 import com.aivars.firstgame.Application;
-import com.aivars.firstgame.states.GameState;
-import com.aivars.firstgame.states.SplashState;
-import com.aivars.firstgame.states.State;
+import com.aivars.firstgame.states.*;
 
 import java.util.Stack;
 
@@ -46,9 +44,14 @@ public class StateHandler {
     private State getState(StateName state) {
         switch (state) {
             case SPLASH:
-                return new GameState(this); // SplashState
+                return new SplashState(this);
+            case START:
+                return new StartState(this);
             case GAME:
+                System.out.println("new game state");
                 return new GameState(this);
+            case PAUSE:
+                return new PauseState(this);
         }
 
         return null;
@@ -63,7 +66,9 @@ public class StateHandler {
 
     public enum StateName {
         SPLASH,
-        GAME
+        START,
+        GAME,
+        PAUSE
     }
 
 }

@@ -12,12 +12,6 @@ public class AssetHandler {
     private AssetManager assetManager = new AssetManager();
     private Map<String, Sprite> sprites = new HashMap<String, Sprite>();
 
-    public AssetHandler() {
-        addSprite("ball.png");
-        addSprite("obstacle.png");
-        addSprite("circle.png");
-    }
-
     public void addSprite(String fileName) {
         assetManager.load(fileName, Texture.class);
         assetManager.finishLoading();
@@ -34,6 +28,13 @@ public class AssetHandler {
             assetManager.unload(assetName);
         }
         sprites.clear();
+    }
+
+    public void load(){
+        dispose();
+        addSprite("ball.png");
+        addSprite("obstacle.png");
+        addSprite("circle.png");
     }
 
     public Map<String,Sprite> getSprites(){

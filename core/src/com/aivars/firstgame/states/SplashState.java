@@ -17,8 +17,8 @@ public class SplashState extends State {
     @Override
     public void update(float dt) {
         accumulate += dt;
-        if (accumulate >= 3) {
-            stateHandler.setState(StateHandler.StateName.GAME);
+        if (accumulate >= 1) {
+            stateHandler.setState(StateHandler.StateName.START);
         }
     }
 
