@@ -1,5 +1,6 @@
 package com.aivars.firstgame.states;
 
+import com.aivars.firstgame.Application;
 import com.aivars.firstgame.Constants;
 import com.aivars.firstgame.handlers.StateHandler;
 import com.badlogic.gdx.Gdx;
@@ -15,8 +16,8 @@ public class StartState extends State {
 
     private Stage stage = new Stage();
 
-    public StartState(final StateHandler stateHandler) {
-        super(stateHandler);
+    public StartState() {
+        super();
         Gdx.input.setInputProcessor(stage);
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = font;
@@ -27,7 +28,7 @@ public class StartState extends State {
         textButton.addListener(new ChangeListener() {
             @Override
             public void changed (ChangeEvent event, Actor actor) {
-                stateHandler.setState(StateHandler.StateName.GAME);
+            StateHandler.setState(StateHandler.StateName.GAME);
             }
         });
 

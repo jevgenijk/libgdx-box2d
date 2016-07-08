@@ -10,12 +10,12 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-public class PauseState extends State {
+public class GameOverState extends State {
 
     private Stage stage = new Stage();
 
-    public PauseState(final StateHandler stateHandler) {
-        super(stateHandler);
+    public GameOverState() {
+        super();
         Gdx.input.setInputProcessor(stage);
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = font;
@@ -26,7 +26,7 @@ public class PauseState extends State {
         textButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                stateHandler.setState(StateHandler.StateName.GAME);
+                StateHandler.setState(StateHandler.StateName.GAME);
             }
         });
 
@@ -48,7 +48,7 @@ public class PauseState extends State {
         spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.begin();
         font.setColor(Color.BLACK);
-        font.draw(application.getSpriteBatch(), "SCORE: " + (GameState.getCircleCount() == -1 ? 0 : GameState.getCircleCount()), 40 , Constants.HEIGHT - 40);
+        font.draw(application.getSpriteBatch(), "SCORE: " + (GameState.getCircleCount() == -1 ? 0 : GameState.getCircleCount()), 40, Constants.HEIGHT - 40);
         spriteBatch.end();
     }
 

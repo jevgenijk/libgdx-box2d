@@ -14,9 +14,7 @@ public class Application extends ApplicationAdapter {
 
     private SpriteBatch spriteBatch;
     private OrthographicCamera camera;
-    private Preferences preferences;
     private AssetHandler assetHandler;
-
     private StateHandler stateHandler;
 
     @Override
@@ -37,6 +35,7 @@ public class Application extends ApplicationAdapter {
     public void dispose() {
         stateHandler.dispose();
         spriteBatch.dispose();
+        assetHandler.dispose();
     }
 
     @Override
@@ -50,10 +49,6 @@ public class Application extends ApplicationAdapter {
 
     public OrthographicCamera getCamera() {
         return camera;
-    }
-
-    public Preferences getPreferences(){
-        return preferences;
     }
 
     public AssetHandler getAssetHandler(){

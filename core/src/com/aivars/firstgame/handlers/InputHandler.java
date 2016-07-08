@@ -7,8 +7,6 @@ import com.badlogic.gdx.InputProcessor;
 
 import static com.aivars.firstgame.Constants.BALL_INNER_LENGTH;
 import static com.aivars.firstgame.Constants.BALL_OUTER_LENGTH;
-import static com.aivars.firstgame.states.GameState.isBallOutside;
-import static com.aivars.firstgame.states.GameState.setBallOutside;
 
 public class InputHandler implements InputProcessor {
 
@@ -20,15 +18,6 @@ public class InputHandler implements InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            System.out.println("left");
-
-        }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            System.out.println("right");
-        }
-
         return false;
     }
 
@@ -44,13 +33,13 @@ public class InputHandler implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (isBallOutside()) {
+        if (gameState.isBallOutside()) {
             gameState.createJoint(BALL_INNER_LENGTH);
         } else {
             gameState.createJoint(BALL_OUTER_LENGTH);
         }
 
-        setBallOutside(!isBallOutside());
+        gameState.setBallOutside(!gameState.isBallOutside());
         return false;
     }
 

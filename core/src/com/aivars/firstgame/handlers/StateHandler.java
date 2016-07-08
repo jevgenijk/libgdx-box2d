@@ -9,17 +9,39 @@ import static com.aivars.firstgame.handlers.StateHandler.StateName.SPLASH;
 
 public class StateHandler {
 
-    private Application application;
-    private Stack<State> states;
+    private static Stack<State> states;
+    private static Application application;
 
-    public StateHandler(Application application) {
-        this.application = application;
-        this.states = new Stack<State>();
-        this.setState(SPLASH);
+    public StateHandler(Application app) {
+        application = app;
+        states = new Stack<State>();
+        setState(SPLASH);
     }
 
-    public Application getApplication() {
+    public static State getState(StateName state) {
+        switch (state) {
+            case SPLASH:
+                return new SplashState();
+            case START:
+                return new StartState();
+            case GAME:
+                return new GameState();
+            case GAME_OVER:
+                return new GameOverState();
+        }
+
+        return null;
+    }
+
+    public static Application getApplication(){
         return application;
+    }
+
+    public static void setState(StateName state) {
+        if (states.size() >= 1) {
+            states.pop().dispose();
+        }
+        states.push(getState(state));
     }
 
     public void update(float dt) {
@@ -41,34 +63,11 @@ public class StateHandler {
         states.peek().resize(w, h);
     }
 
-    private State getState(StateName state) {
-        switch (state) {
-            case SPLASH:
-                return new SplashState(this);
-            case START:
-                return new StartState(this);
-            case GAME:
-                System.out.println("new game state");
-                return new GameState(this);
-            case PAUSE:
-                return new PauseState(this);
-        }
-
-        return null;
-    }
-
-    public void setState(StateName state) {
-        if (states.size() >= 1) {
-            states.pop().dispose();
-        }
-        states.push(getState(state));
-    }
-
     public enum StateName {
         SPLASH,
         START,
         GAME,
-        PAUSE
+        GAME_OVER
     }
 
 }

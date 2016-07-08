@@ -1,6 +1,5 @@
 package com.aivars.firstgame.handlers;
 
-import com.aivars.firstgame.states.GameState;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 
@@ -19,13 +18,12 @@ public class ContactHandler implements ContactListener {
         Fixture fb = c.getFixtureB();
 
         if (fa.getBody().getUserData() != null) {
-            System.out.println(fa.getBody().getUserData());
             if (fa.isSensor()) {
                 Body userData = (Body) fa.getBody().getUserData();
                 removableBodies.add(userData);
                 removableBodies.add(fa.getBody());
             } else if (fa.getBody().getUserData().equals("obstacle")) {
-                GameState.setGameOver(true);
+                StateHandler.setState(StateHandler.StateName.GAME_OVER);
             }
         }
 
@@ -35,7 +33,7 @@ public class ContactHandler implements ContactListener {
                 removableBodies.add(userData);
                 removableBodies.add(fb.getBody());
             } else if (fb.getBody().getUserData().equals("obstacle")) {
-                GameState.setGameOver(true);
+                StateHandler.setState(StateHandler.StateName.GAME_OVER);
             }
         }
     }

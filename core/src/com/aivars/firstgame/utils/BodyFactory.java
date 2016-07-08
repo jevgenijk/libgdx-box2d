@@ -31,11 +31,10 @@ public class BodyFactory {
         return body;
     }
 
-    public Body createCircle(World world, BodyDef.BodyType bodyType, float posX, float posY,
-                             float radius) {
+    public Body createCircle(BodyDef.BodyType bodyType, Vector2 position, float radius) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = bodyType;
-        bodyDef.position.set(posX, posY);
+        bodyDef.position.set(position.x, position.y);
 
         Body body = world.createBody(bodyDef);
         FixtureDef fixtureDef = new FixtureDef();

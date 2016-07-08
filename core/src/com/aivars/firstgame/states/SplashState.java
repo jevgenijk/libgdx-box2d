@@ -1,5 +1,6 @@
 package com.aivars.firstgame.states;
 
+import com.aivars.firstgame.Application;
 import com.aivars.firstgame.Constants;
 import com.aivars.firstgame.handlers.StateHandler;
 import com.badlogic.gdx.Gdx;
@@ -10,15 +11,15 @@ public class SplashState extends State {
 
     float accumulate = 0f;
 
-    public SplashState(StateHandler stateHandler) {
-        super(stateHandler);
+    public SplashState (){
+        super();
     }
 
     @Override
     public void update(float dt) {
         accumulate += dt;
         if (accumulate >= 1) {
-            stateHandler.setState(StateHandler.StateName.START);
+            StateHandler.setState(StateHandler.StateName.START);
         }
     }
 
