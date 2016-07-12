@@ -46,6 +46,10 @@ public class GameState extends State {
         init();
     }
 
+    public static void increaseCircleCount(){
+        circleCount++;
+    }
+
     public static int getCircleCount() {
         return circleCount;
     }

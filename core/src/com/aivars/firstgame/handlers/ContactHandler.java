@@ -3,6 +3,8 @@ package com.aivars.firstgame.handlers;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 
+import static com.aivars.firstgame.states.GameState.increaseCircleCount;
+
 
 public class ContactHandler implements ContactListener {
 
@@ -22,6 +24,7 @@ public class ContactHandler implements ContactListener {
                 Body userData = (Body) fa.getBody().getUserData();
                 removableBodies.add(userData);
                 removableBodies.add(fa.getBody());
+                increaseCircleCount();
             } else if (fa.getBody().getUserData().equals("obstacle")) {
                 StateHandler.setState(StateHandler.StateName.GAME_OVER);
             }
@@ -32,6 +35,7 @@ public class ContactHandler implements ContactListener {
                 Body userData = (Body) fb.getBody().getUserData();
                 removableBodies.add(userData);
                 removableBodies.add(fb.getBody());
+                increaseCircleCount();
             } else if (fb.getBody().getUserData().equals("obstacle")) {
                 StateHandler.setState(StateHandler.StateName.GAME_OVER);
             }
