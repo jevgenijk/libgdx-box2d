@@ -29,11 +29,11 @@ public class GameState extends State {
     private ContactHandler contactHandler = new ContactHandler();
     private BodyFactory bodyFactory;
     private boolean isBallOutside = true;
-    private int lastAngle = 360;
     private World world;
     private Body circle;
     private Body ball;
     private Joint joint;
+    private int nextObstaclePosition = 326;
 
     public GameState() {
         super();
@@ -76,7 +76,7 @@ public class GameState extends State {
         RevoluteJoint revoluteJoint = new RevoluteJoint(circle, ball, false);
         revoluteJoint.SetAnchorA(scale(0), scale(0));
         revoluteJoint.SetAnchorB(scale(scaleB), scale(0));
-        revoluteJoint.SetMotor(20, 90);
+        revoluteJoint.SetMotor(20, 120);
         joint = revoluteJoint.CreateJoint(world);
     }
 
@@ -86,13 +86,13 @@ public class GameState extends State {
         disposeBodies();
 
         double spikeAngle = Utils.calcRotationAngleInDegrees(circle.getPosition().x, circle.getPosition().y, ball.getPosition().x, ball.getPosition().y);
-        //Resetting circle angle if current spike angle is somewhere between 0 and 5 degrees
-        if (lastAngle >= 360 && spikeAngle > 0 && spikeAngle < 5) {
-            lastAngle = 0;
-            circleCount++;
+
+        if (nextObstaclePosition < 0) {
+            nextObstaclePosition = (int) (360 + (spikeAngle - ANGLE_DISTANCE_BETWEEN_OBSTACLES));
         }
 
-        if (lastAngle < spikeAngle) {
+        if (nextObstaclePosition > spikeAngle && (nextObstaclePosition - spikeAngle < ANGLE_DISTANCE_BETWEEN_OBSTACLES)) {
+            System.out.println(nextObstaclePosition + " - " + spikeAngle);
             int obstacleRandomPosition = (int) (Math.random() * 2 + 1);
             int x = (int) (circle.getPosition().x * Constants.PPM + (BIG_CIRCLE_RADIUS + 10) * Math.cos(spikeAngle * Math.PI / 180F));
             int y = (int) (circle.getPosition().y * Constants.PPM + (BIG_CIRCLE_RADIUS + 10) * Math.sin(spikeAngle * Math.PI / 180F));
@@ -108,9 +108,8 @@ public class GameState extends State {
             Body obstacleBody = bodyFactory.createRectangle(BodyDef.BodyType.StaticBody, obstaclePosition, angle, obstacleWidth, obstacleHeight, "obstacle", false);
             Body sensorBody = bodyFactory.createRectangle(BodyDef.BodyType.StaticBody, sensorPosition, angle, obstacleWidth, obstacleHeight, obstacleBody, true);
 
-            lastAngle = (int) (spikeAngle + ANGLE_DISTANCE_BETWEEN_OBSTACLES);
+            nextObstaclePosition = (int) spikeAngle - ANGLE_DISTANCE_BETWEEN_OBSTACLES;
         }
-
     }
 
     @Override
@@ -153,9 +152,9 @@ public class GameState extends State {
     public void dispose() {
         if (!world.isLocked()) {
             world.dispose();
+            debugger.dispose();
         }
 
-        debugger.dispose();
     }
 
     private void disposeBodies() {
