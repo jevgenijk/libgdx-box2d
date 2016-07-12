@@ -48,7 +48,7 @@ public class GameOverState extends State {
         spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.begin();
         font.setColor(Color.BLACK);
-        font.draw(application.getSpriteBatch(), "SCORE: " + (GameState.getCircleCount() == -1 ? 0 : GameState.getCircleCount()), 40, Constants.HEIGHT - 40);
+        font.draw(application.getSpriteBatch(), "SCORE: " + GameState.getCircleCount(), 40, Constants.HEIGHT - 40);
         spriteBatch.end();
     }
 

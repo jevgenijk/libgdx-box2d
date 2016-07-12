@@ -25,7 +25,7 @@ public class GameState extends State {
      * 4. Refactoring
      */
     private static Box2DDebugRenderer debugger = new Box2DDebugRenderer();
-    private static int circleCount = -1;
+    private static int circleCount = 0;
     private ContactHandler contactHandler = new ContactHandler();
     private BodyFactory bodyFactory;
     private boolean isBallOutside = true;
@@ -41,7 +41,7 @@ public class GameState extends State {
         bodyFactory = new BodyFactory(world);
         world.setContactListener(contactHandler);
         Gdx.input.setInputProcessor(new InputHandler(this));
-        circleCount = -1;
+        circleCount = 0;
 
         init();
     }
@@ -123,7 +123,7 @@ public class GameState extends State {
 
         spriteBatch.begin();
         font.setColor(69 / 255f, 68 / 255f, 64 / 255f, 1f);
-        font.draw(application.getSpriteBatch(), "SCORE: " + (circleCount == -1 ? 0 : circleCount), 30, Constants.HEIGHT - 30);
+        font.draw(application.getSpriteBatch(), "SCORE: " + circleCount, 30, Constants.HEIGHT - 30);
         int circleSize = 178;
         spriteBatch.draw(assetHandler.getSprite("circle.png"), circle.getPosition().x * Constants.PPM - (circleSize / 2), circle.getPosition().y * Constants.PPM - (circleSize / 2), circleSize, circleSize);
 
