@@ -1,5 +1,6 @@
 package com.aivars.firstgame.states;
 
+import com.aivars.firstgame.Application;
 import com.aivars.firstgame.Constants;
 import com.aivars.firstgame.levels.FirstLevel;
 import com.aivars.firstgame.levels.Level;
@@ -21,9 +22,7 @@ public class GameState extends State {
     /**
      * TODO:
      * 1. Multiple levels - level screen
-     * 3. Randomize obstacle distance
-     * 4. Refactoring
-     * 5. 
+     * 2. Refactoring
      */
     private Box2DDebugRenderer debugger = new Box2DDebugRenderer();
     private BodyFactory bodyFactory;
@@ -31,8 +30,8 @@ public class GameState extends State {
     private Level level;
     private Array<Body> removableBodies = new Array<Body>();
 
-    public GameState() {
-        super();
+    public GameState(Application application) {
+        super(application);
         world = new World(new Vector2(0, GRAVITY), true);
         bodyFactory = new BodyFactory(world);
         level = new FirstLevel(this);
@@ -52,10 +51,10 @@ public class GameState extends State {
         level.render();
 
         if (DEBUG_MODE) {
-            debugger.render(world, getCamera().combined.scl(Constants.PPM));
+            debugger.render(world, application.getCamera().combined.scl(Constants.PPM));
         }
-        getCamera().update();
-        getSpriteBatch().setProjectionMatrix(getCamera().combined);
+        application.getCamera().update();
+        application.getSpriteBatch().setProjectionMatrix(application.getCamera().combined);
     }
 
     @Override

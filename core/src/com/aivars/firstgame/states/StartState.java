@@ -16,11 +16,11 @@ public class StartState extends State {
 
     private Stage stage = new Stage();
 
-    public StartState() {
-        super();
+    public StartState(Application application) {
+        super(application);
         Gdx.input.setInputProcessor(stage);
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = bitmapFont;
+        textButtonStyle.font = application.getBitmapFont();
         textButtonStyle.fontColor = Color.BLACK;
         TextButton textButton = new TextButton("START", textButtonStyle);
         textButton.setPosition(Constants.WIDTH/3, Constants.HEIGHT/2);
@@ -44,7 +44,7 @@ public class StartState extends State {
         Gdx.gl.glClearColor(255 / 255f, 252 / 255f, 252 / 255f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        spriteBatch.setProjectionMatrix(camera.combined);
+        application.getSpriteBatch().setProjectionMatrix(application.getCamera().combined);
         stage.draw();
     }
 

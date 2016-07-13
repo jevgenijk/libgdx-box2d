@@ -18,6 +18,12 @@ import static com.aivars.firstgame.utils.Utils.scale;
 
 public class FirstLevel extends Level implements ContactListener, InputProcessor {
 
+    /**
+    * TODO:
+     * Randomize obstacle distance
+     * Randomize speed
+    * */
+
     private int bigCircleRadius = 85;
     private int ballRadius = 5;
     private int ballOuterLength = 100;
@@ -90,6 +96,7 @@ public class FirstLevel extends Level implements ContactListener, InputProcessor
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         spriteBatch.begin();
+
         bitmapFont.setColor(69 / 255f, 68 / 255f, 64 / 255f, 1f);
         bitmapFont.draw(application.getSpriteBatch(), "SCORE: " + circleCount, 30, Constants.HEIGHT - 30);
         int circleSize = 178;

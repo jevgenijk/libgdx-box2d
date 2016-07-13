@@ -1,5 +1,6 @@
 package com.aivars.firstgame.states;
 
+import com.aivars.firstgame.Application;
 import com.aivars.firstgame.Constants;
 import com.aivars.firstgame.handlers.StateHandler;
 import com.badlogic.gdx.Gdx;
@@ -14,11 +15,11 @@ public class GameOverState extends State {
 
     private Stage stage = new Stage();
 
-    public GameOverState() {
-        super();
+    public GameOverState(Application application) {
+        super(application);
         Gdx.input.setInputProcessor(stage);
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = bitmapFont;
+        textButtonStyle.font = application.getBitmapFont();
         textButtonStyle.fontColor = Color.BLACK;
         TextButton textButton = new TextButton("RESTART", textButtonStyle);
         textButton.setPosition(Constants.WIDTH / 3, Constants.HEIGHT / 2);
@@ -42,14 +43,14 @@ public class GameOverState extends State {
         Gdx.gl.glClearColor(255 / 255f, 252 / 255f, 252 / 255f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        spriteBatch.setProjectionMatrix(camera.combined);
+        application.getSpriteBatch().setProjectionMatrix(application.getCamera().combined);
         stage.draw();
 
-        spriteBatch.setProjectionMatrix(camera.combined);
-        spriteBatch.begin();
-        bitmapFont.setColor(Color.BLACK);
-        bitmapFont.draw(application.getSpriteBatch(), "YOU FAILED!", 40, Constants.HEIGHT - 40);
-        spriteBatch.end();
+        application.getSpriteBatch().setProjectionMatrix(application.getCamera().combined);
+        application.getSpriteBatch().begin();
+        application.getBitmapFont().setColor(Color.BLACK);
+        application.getBitmapFont().draw(application.getSpriteBatch(), "YOU FAILED!", 40, Constants.HEIGHT - 40);
+        application.getSpriteBatch().end();
     }
 
     @Override

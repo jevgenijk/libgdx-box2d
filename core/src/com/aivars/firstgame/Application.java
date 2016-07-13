@@ -7,6 +7,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Application extends ApplicationAdapter {
@@ -16,10 +17,12 @@ public class Application extends ApplicationAdapter {
     private AssetHandler assetHandler;
     private StateHandler stateHandler;
     private PreferencesHandler preferencesHandler;
+    private BitmapFont bitmapFont;
 
     @Override
     public void create() {
         spriteBatch = new SpriteBatch();
+        bitmapFont = new BitmapFont();
         camera = new OrthographicCamera();
         assetHandler = new AssetHandler();
         preferencesHandler = new PreferencesHandler(Gdx.app.getPreferences("Billion dollar app"));
@@ -58,5 +61,9 @@ public class Application extends ApplicationAdapter {
 
     public PreferencesHandler getPreferencesHandler() {
         return preferencesHandler;
+    }
+
+    public BitmapFont getBitmapFont() {
+        return bitmapFont;
     }
 }

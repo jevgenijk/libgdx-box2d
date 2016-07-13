@@ -21,20 +21,16 @@ public class StateHandler {
     public static State getState(StateName state) {
         switch (state) {
             case SPLASH:
-                return new GameState();//SplashState
+                return new GameState(application);//SplashState
             case START:
-                return new GameState();//StartState
+                return new GameState(application);//StartState
             case GAME:
-                return new GameState();
+                return new GameState(application);
             case GAME_OVER:
-                return new GameState();//GameOverState
+                return new GameState(application);//GameOverState
         }
 
         return null;
-    }
-
-    public static Application getApplication(){
-        return application;
     }
 
     public static void setState(StateName state) {
