@@ -1,8 +1,7 @@
-package com.aivars.firstgame.levels.first;
+package com.aivars.firstgame.levels;
 
 import com.aivars.firstgame.Constants;
 import com.aivars.firstgame.handlers.StateHandler;
-import com.aivars.firstgame.levels.Level;
 import com.aivars.firstgame.states.GameState;
 import com.aivars.firstgame.utils.RevoluteJoint;
 import com.aivars.firstgame.utils.Utils;
@@ -128,6 +127,9 @@ public class FirstLevel extends Level implements ContactListener, InputProcessor
                 circleCount++;
             } else if (fa.getBody().getUserData().equals("obstacle")) {
                 StateHandler.setState(StateHandler.StateName.GAME_OVER);
+                if(preferencesHandler.getInteger("first_highscore") < circleCount){
+                    preferencesHandler.putInteger("first_highscore",circleCount);
+                }
             }
         }
 
@@ -139,6 +141,9 @@ public class FirstLevel extends Level implements ContactListener, InputProcessor
                 circleCount++;
             } else if (fb.getBody().getUserData().equals("obstacle")) {
                 StateHandler.setState(StateHandler.StateName.GAME_OVER);
+                if(preferencesHandler.getInteger("first_highscore") < circleCount){
+                    preferencesHandler.putInteger("first_highscore",circleCount);
+                }
             }
         }
     }

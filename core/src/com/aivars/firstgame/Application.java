@@ -1,6 +1,7 @@
 package com.aivars.firstgame;
 
 import com.aivars.firstgame.handlers.AssetHandler;
+import com.aivars.firstgame.handlers.PreferencesHandler;
 import com.aivars.firstgame.handlers.StateHandler;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -8,20 +9,20 @@ import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import static com.aivars.firstgame.Constants.SCALE;
-
 public class Application extends ApplicationAdapter {
 
     private SpriteBatch spriteBatch;
     private OrthographicCamera camera;
     private AssetHandler assetHandler;
     private StateHandler stateHandler;
+    private PreferencesHandler preferencesHandler;
 
     @Override
     public void create() {
         spriteBatch = new SpriteBatch();
         camera = new OrthographicCamera();
         assetHandler = new AssetHandler();
+        preferencesHandler = new PreferencesHandler(Gdx.app.getPreferences("Billion dollar app"));
         stateHandler = new StateHandler(this);
     }
 
@@ -51,7 +52,11 @@ public class Application extends ApplicationAdapter {
         return camera;
     }
 
-    public AssetHandler getAssetHandler(){
+    public AssetHandler getAssetHandler() {
         return assetHandler;
+    }
+
+    public PreferencesHandler getPreferencesHandler() {
+        return preferencesHandler;
     }
 }

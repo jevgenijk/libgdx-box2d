@@ -1,8 +1,8 @@
 package com.aivars.firstgame.states;
 
 import com.aivars.firstgame.Constants;
+import com.aivars.firstgame.levels.FirstLevel;
 import com.aivars.firstgame.levels.Level;
-import com.aivars.firstgame.levels.first.FirstLevel;
 import com.aivars.firstgame.utils.BodyFactory;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -23,6 +23,7 @@ public class GameState extends State {
      * 1. Multiple levels - level screen
      * 3. Randomize obstacle distance
      * 4. Refactoring
+     * 5. 
      */
     private Box2DDebugRenderer debugger = new Box2DDebugRenderer();
     private BodyFactory bodyFactory;
