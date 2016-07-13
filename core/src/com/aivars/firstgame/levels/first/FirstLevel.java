@@ -1,26 +1,23 @@
 package com.aivars.firstgame.levels.first;
 
 import com.aivars.firstgame.Constants;
+import com.aivars.firstgame.handlers.StateHandler;
 import com.aivars.firstgame.levels.Level;
-import com.aivars.firstgame.levels.first.handlers.ContactHandler;
-import com.aivars.firstgame.levels.first.handlers.InputHandler;
 import com.aivars.firstgame.states.GameState;
 import com.aivars.firstgame.utils.RevoluteJoint;
 import com.aivars.firstgame.utils.Utils;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Joint;
-import com.badlogic.gdx.physics.box2d.MassData;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 
 import static com.aivars.firstgame.utils.Utils.scale;
 
-public class FirstLevel extends Level {
+public class FirstLevel extends Level implements ContactListener, InputProcessor {
 
     private int bigCircleRadius = 85;
     private int ballRadius = 5;
@@ -36,8 +33,6 @@ public class FirstLevel extends Level {
 
     public FirstLevel(GameState gameState) {
         super(gameState);
-
-        circleCount = 0;
         circle = bodyFactory.createCircle(BodyDef.BodyType.StaticBody, new Vector2(scale(Constants.WIDTH / 2), scale(Constants.HEIGHT / 2)), bigCircleRadius);
         ball = bodyFactory.createCircle(BodyDef.BodyType.DynamicBody, new Vector2(0, 0), ballRadius);
         MassData massData = new MassData();
@@ -55,26 +50,6 @@ public class FirstLevel extends Level {
                 , startSpawnDelayTime
                 , spawnDelayTime
         );
-    }
-
-    public int getBallInnerLength() {
-        return ballInnerLength;
-    }
-
-    public int getBallOuterLength() {
-        return ballOuterLength;
-    }
-
-    public void increaseCircleCount() {
-        circleCount++;
-    }
-
-    public boolean isBallOutside() {
-        return isBallOutside;
-    }
-
-    public void setBallOutside(boolean isOutside) {
-        isBallOutside = isOutside;
     }
 
     public void createJoint(int scaleB) {
@@ -140,14 +115,91 @@ public class FirstLevel extends Level {
         spriteBatch.end();
     }
 
-    @Override
-    public void setContactHandler() {
-        contactHandler = new ContactHandler(this);
+
+    public void beginContact(Contact c) {
+        Fixture fa = c.getFixtureA();
+        Fixture fb = c.getFixtureB();
+
+        if (fa.getBody().getUserData() != null) {
+            if (fa.isSensor()) {
+                Body userData = (Body) fa.getBody().getUserData();
+                gameState.addRemovableBody(userData);
+                gameState.addRemovableBody(fa.getBody());
+                circleCount++;
+            } else if (fa.getBody().getUserData().equals("obstacle")) {
+                StateHandler.setState(StateHandler.StateName.GAME_OVER);
+            }
+        }
+
+        if (fb.getBody().getUserData() != null) {
+            if (fb.isSensor()) {
+                Body userData = (Body) fb.getBody().getUserData();
+                gameState.addRemovableBody(userData);
+                gameState.addRemovableBody(fb.getBody());
+                circleCount++;
+            } else if (fb.getBody().getUserData().equals("obstacle")) {
+                StateHandler.setState(StateHandler.StateName.GAME_OVER);
+            }
+        }
+    }
+
+    public void endContact(Contact c) {
+
+    }
+
+    public void preSolve(Contact c, Manifold m) {
+
+    }
+
+    public void postSolve(Contact c, ContactImpulse ci) {
+
     }
 
     @Override
-    public void setInputHandler() {
-        inputHandler = new InputHandler(this);
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if (isBallOutside) {
+            createJoint(ballInnerLength);
+        } else {
+            createJoint(ballOuterLength);
+        }
+
+        isBallOutside = !isBallOutside;
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
     }
 
 }
