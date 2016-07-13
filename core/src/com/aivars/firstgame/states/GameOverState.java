@@ -18,7 +18,7 @@ public class GameOverState extends State {
         super();
         Gdx.input.setInputProcessor(stage);
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = font;
+        textButtonStyle.font = bitmapFont;
         textButtonStyle.fontColor = Color.BLACK;
         TextButton textButton = new TextButton("RESTART", textButtonStyle);
         textButton.setPosition(Constants.WIDTH / 3, Constants.HEIGHT / 2);
@@ -47,8 +47,8 @@ public class GameOverState extends State {
 
         spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.begin();
-        font.setColor(Color.BLACK);
-        font.draw(application.getSpriteBatch(), "SCORE: " + GameState.getCircleCount(), 40, Constants.HEIGHT - 40);
+        bitmapFont.setColor(Color.BLACK);
+        bitmapFont.draw(application.getSpriteBatch(), "YOU FAILED!", 40, Constants.HEIGHT - 40);
         spriteBatch.end();
     }
 

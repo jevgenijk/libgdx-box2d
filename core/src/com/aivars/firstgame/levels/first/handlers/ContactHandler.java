@@ -1,17 +1,20 @@
-package com.aivars.firstgame.handlers;
+package com.aivars.firstgame.levels.first.handlers;
 
+import com.aivars.firstgame.handlers.StateHandler;
+import com.aivars.firstgame.levels.Level;
+import com.aivars.firstgame.levels.first.FirstLevel;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
-
-import static com.aivars.firstgame.states.GameState.increaseCircleCount;
 
 
 public class ContactHandler implements ContactListener {
 
     private Array<Body> removableBodies;
+    private FirstLevel firstLevel;
 
-    public ContactHandler() {
+    public ContactHandler(FirstLevel firstLevel) {
         super();
+        this.firstLevel = firstLevel;
         removableBodies = new Array<Body>();
     }
 
@@ -24,7 +27,7 @@ public class ContactHandler implements ContactListener {
                 Body userData = (Body) fa.getBody().getUserData();
                 removableBodies.add(userData);
                 removableBodies.add(fa.getBody());
-                increaseCircleCount();
+                firstLevel.increaseCircleCount();
             } else if (fa.getBody().getUserData().equals("obstacle")) {
                 StateHandler.setState(StateHandler.StateName.GAME_OVER);
             }
@@ -35,7 +38,7 @@ public class ContactHandler implements ContactListener {
                 Body userData = (Body) fb.getBody().getUserData();
                 removableBodies.add(userData);
                 removableBodies.add(fb.getBody());
-                increaseCircleCount();
+                firstLevel.increaseCircleCount();
             } else if (fb.getBody().getUserData().equals("obstacle")) {
                 StateHandler.setState(StateHandler.StateName.GAME_OVER);
             }

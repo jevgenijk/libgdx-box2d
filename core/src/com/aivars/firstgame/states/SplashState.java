@@ -30,8 +30,8 @@ public class SplashState extends State {
 
         spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.begin();
-        font.setColor(Color.BLACK);
-        font.draw(application.getSpriteBatch(), "NASTY FIXES GO GO GO", Constants.WIDTH / 4, Constants.HEIGHT / 2);
+        bitmapFont.setColor(Color.BLACK);
+        bitmapFont.draw(application.getSpriteBatch(), "NASTY FIXES GO GO GO", Constants.WIDTH / 4, Constants.HEIGHT / 2);
         spriteBatch.end();
     }
 

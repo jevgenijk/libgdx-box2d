@@ -20,7 +20,7 @@ public class StartState extends State {
         super();
         Gdx.input.setInputProcessor(stage);
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = font;
+        textButtonStyle.font = bitmapFont;
         textButtonStyle.fontColor = Color.BLACK;
         TextButton textButton = new TextButton("START", textButtonStyle);
         textButton.setPosition(Constants.WIDTH/3, Constants.HEIGHT/2);

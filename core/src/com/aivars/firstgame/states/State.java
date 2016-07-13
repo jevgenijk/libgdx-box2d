@@ -12,7 +12,7 @@ public abstract class State {
     protected SpriteBatch spriteBatch;
     protected OrthographicCamera camera;
     protected AssetHandler assetHandler;
-    protected BitmapFont font = new BitmapFont();
+    protected BitmapFont bitmapFont = new BitmapFont();
 
     public State() {
         this.application = StateHandler.getApplication();
@@ -31,4 +31,23 @@ public abstract class State {
 
     public abstract void dispose();
 
+    public Application getApplication() {
+        return application;
+    }
+
+    public SpriteBatch getSpriteBatch() {
+        return spriteBatch;
+    }
+
+    public OrthographicCamera getCamera() {
+        return camera;
+    }
+
+    public AssetHandler getAssetHandler() {
+        return assetHandler;
+    }
+
+    public BitmapFont getBitmapFont() {
+        return bitmapFont;
+    }
 }
