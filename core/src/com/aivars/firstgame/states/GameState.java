@@ -4,6 +4,7 @@ import com.aivars.firstgame.Constants;
 import com.aivars.firstgame.levels.first.FirstLevel;
 import com.aivars.firstgame.levels.Level;
 import com.aivars.firstgame.utils.BodyFactory;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
@@ -30,6 +31,8 @@ public class GameState extends State {
         world = new World(new Vector2(0, GRAVITY), true);
         bodyFactory = new BodyFactory(world);
         level = new FirstLevel(this);
+        world.setContactListener(level.getContactHandler());
+        Gdx.input.setInputProcessor(level.getInputHandler());
     }
 
     @Override

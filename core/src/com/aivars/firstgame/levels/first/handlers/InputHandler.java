@@ -1,14 +1,7 @@
 package com.aivars.firstgame.levels.first.handlers;
 
-import com.aivars.firstgame.levels.Level;
 import com.aivars.firstgame.levels.first.FirstLevel;
-import com.aivars.firstgame.states.GameState;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-
-import static com.aivars.firstgame.Constants.BALL_INNER_LENGTH;
-import static com.aivars.firstgame.Constants.BALL_OUTER_LENGTH;
 
 public class InputHandler implements InputProcessor {
 
@@ -36,9 +29,9 @@ public class InputHandler implements InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (firstLevel.isBallOutside()) {
-            firstLevel.createJoint(BALL_INNER_LENGTH);
+            firstLevel.createJoint(firstLevel.getBallInnerLength());
         } else {
-            firstLevel.createJoint(BALL_OUTER_LENGTH);
+            firstLevel.createJoint(firstLevel.getBallOuterLength());
         }
 
         firstLevel.setBallOutside(!firstLevel.isBallOutside());

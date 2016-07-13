@@ -16,33 +16,53 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.MassData;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 
-import static com.aivars.firstgame.Constants.*;
 import static com.aivars.firstgame.utils.Utils.scale;
 
 public class FirstLevel extends Level {
 
-    private static int circleCount = 0;
+    private int bigCircleRadius = 85;
+    private int ballRadius = 5;
+    private int ballOuterLength = 100;
+    private int ballInnerLength = 70;
+    private int circleCount = 0;
+    private float startSpawnDelayTime = 0.6f;
+    private float spawnDelayTime = 0.5f;
     private boolean isBallOutside = true;
     private Body circle;
     private Body ball;
     private Joint joint;
-    private int nextObstaclePosition = 360;
-
 
     public FirstLevel(GameState gameState) {
         super(gameState);
-        world.setContactListener(contactHandler);
-        Gdx.input.setInputProcessor(inputHandler);
 
         circleCount = 0;
-        circle = bodyFactory.createCircle(BodyDef.BodyType.StaticBody, new Vector2(scale(Constants.WIDTH / 2), scale(Constants.HEIGHT / 2)), BIG_CIRCLE_RADIUS);
-        ball = bodyFactory.createCircle(BodyDef.BodyType.DynamicBody, new Vector2(0, 0), SMALL_CIRCLE_RADIUS);
+        circle = bodyFactory.createCircle(BodyDef.BodyType.StaticBody, new Vector2(scale(Constants.WIDTH / 2), scale(Constants.HEIGHT / 2)), bigCircleRadius);
+        ball = bodyFactory.createCircle(BodyDef.BodyType.DynamicBody, new Vector2(0, 0), ballRadius);
         MassData massData = new MassData();
         massData.I = (float) 1;
         ball.setMassData(massData);
 
-        createJoint(BALL_OUTER_LENGTH);
+        createJoint(ballOuterLength);
+
+        Timer.schedule(new Timer.Task() {
+                           @Override
+                           public void run() {
+                               updateUsingTimer();
+                           }
+                       }
+                , startSpawnDelayTime
+                , spawnDelayTime
+        );
+    }
+
+    public int getBallInnerLength() {
+        return ballInnerLength;
+    }
+
+    public int getBallOuterLength() {
+        return ballOuterLength;
     }
 
     public void increaseCircleCount() {
@@ -65,35 +85,30 @@ public class FirstLevel extends Level {
         RevoluteJoint revoluteJoint = new RevoluteJoint(circle, ball, false);
         revoluteJoint.SetAnchorA(scale(0), scale(0));
         revoluteJoint.SetAnchorB(scale(scaleB), scale(0));
-        revoluteJoint.SetMotor(20, 120);
+        revoluteJoint.SetMotor(20, 150);
         joint = revoluteJoint.CreateJoint(world);
     }
 
-    public void update(float dt) {
+    public void updateUsingTimer() {
         double spikeAngle = Utils.calcRotationAngleInDegrees(circle.getPosition().x, circle.getPosition().y, ball.getPosition().x, ball.getPosition().y);
+        int obstacleRandomPosition = (int) (Math.random() * 2 + 1);
+        int x = (int) (circle.getPosition().x * Constants.PPM + (bigCircleRadius + 10) * Math.cos(spikeAngle * Math.PI / 180F));
+        int y = (int) (circle.getPosition().y * Constants.PPM + (bigCircleRadius + 10) * Math.sin(spikeAngle * Math.PI / 180F));
+        int sensorX = (int) (circle.getPosition().x * Constants.PPM + (bigCircleRadius - 10) * Math.cos(spikeAngle * Math.PI / 180F));
+        int sensorY = (int) (circle.getPosition().y * Constants.PPM + (bigCircleRadius - 10) * Math.sin(spikeAngle * Math.PI / 180F));
 
-        if (nextObstaclePosition < 0) {
-            nextObstaclePosition = (int) (360 + (spikeAngle - ANGLE_DISTANCE_BETWEEN_OBSTACLES));
-        }
+        Vector2 obstaclePosition = obstacleRandomPosition == 1 ? new Vector2(scale(x), scale(y)) : new Vector2(scale(sensorX), scale(sensorY));
+        Vector2 sensorPosition = obstacleRandomPosition == 1 ? new Vector2(scale(sensorX), scale(sensorY)) : new Vector2(scale(x), scale(y));
+        float angle = (float) Math.toRadians(spikeAngle + 90);
+        float obstacleWidth = scale(3);
+        float obstacleHeight = scale(10);
 
-        if (nextObstaclePosition > spikeAngle && (nextObstaclePosition - spikeAngle < ANGLE_DISTANCE_BETWEEN_OBSTACLES)) {
-            int obstacleRandomPosition = (int) (Math.random() * 2 + 1);
-            int x = (int) (circle.getPosition().x * Constants.PPM + (BIG_CIRCLE_RADIUS + 10) * Math.cos(spikeAngle * Math.PI / 180F));
-            int y = (int) (circle.getPosition().y * Constants.PPM + (BIG_CIRCLE_RADIUS + 10) * Math.sin(spikeAngle * Math.PI / 180F));
-            int sensorX = (int) (circle.getPosition().x * Constants.PPM + (BIG_CIRCLE_RADIUS - 10) * Math.cos(spikeAngle * Math.PI / 180F));
-            int sensorY = (int) (circle.getPosition().y * Constants.PPM + (BIG_CIRCLE_RADIUS - 10) * Math.sin(spikeAngle * Math.PI / 180F));
+        Body obstacleBody = bodyFactory.createRectangle(BodyDef.BodyType.StaticBody, obstaclePosition, angle, obstacleWidth, obstacleHeight, "obstacle", false);
+        bodyFactory.createRectangle(BodyDef.BodyType.StaticBody, sensorPosition, angle, obstacleWidth, obstacleHeight, obstacleBody, true);
 
-            Vector2 obstaclePosition = obstacleRandomPosition == 1 ? new Vector2(scale(x), scale(y)) : new Vector2(scale(sensorX), scale(sensorY));
-            Vector2 sensorPosition = obstacleRandomPosition == 1 ? new Vector2(scale(sensorX), scale(sensorY)) : new Vector2(scale(x), scale(y));
-            float angle = (float) Math.toRadians(spikeAngle + 90);
-            float obstacleWidth = scale(3);
-            float obstacleHeight = scale(10);
+    }
 
-            Body obstacleBody = bodyFactory.createRectangle(BodyDef.BodyType.StaticBody, obstaclePosition, angle, obstacleWidth, obstacleHeight, "obstacle", false);
-            Body sensorBody = bodyFactory.createRectangle(BodyDef.BodyType.StaticBody, sensorPosition, angle, obstacleWidth, obstacleHeight, obstacleBody, true);
-
-            nextObstaclePosition = (int) spikeAngle - ANGLE_DISTANCE_BETWEEN_OBSTACLES;
-        }
+    public void update(float dt) {
     }
 
     public void render() {
@@ -123,10 +138,6 @@ public class FirstLevel extends Level {
         }
 
         spriteBatch.end();
-    }
-
-    public void dispose() {
-
     }
 
     @Override
