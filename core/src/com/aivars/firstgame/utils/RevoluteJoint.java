@@ -27,7 +27,7 @@ public class RevoluteJoint {
     public void SetMotor(float torque,float speed){
         revoluteJointDef.enableMotor=true;
         revoluteJointDef.maxMotorTorque=torque;
-        revoluteJointDef.motorSpeed=-speed*MathUtils.degreesToRadians;
+        revoluteJointDef.motorSpeed=speed*MathUtils.degreesToRadians;
     }
 
     public Joint CreateJoint(World world){

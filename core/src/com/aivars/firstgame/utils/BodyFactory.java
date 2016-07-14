@@ -46,4 +46,25 @@ public class BodyFactory {
         return body;
     }
 
+    public Body createCircle(BodyDef.BodyType bodyType, Vector2 position, float radius, boolean isSensor,String userData) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = bodyType;
+        bodyDef.position.set(position.x, position.y);
+
+        Body body = world.createBody(bodyDef);
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = new CircleShape();
+        fixtureDef.shape.setRadius(scale(radius));
+        fixtureDef.isSensor = isSensor;
+        body.setUserData(userData);
+
+        MassData massData = new MassData();
+        massData.I = (float) 1;
+        body.setMassData(massData);
+
+        body.createFixture(fixtureDef);
+        fixtureDef.shape.dispose();
+        return body;
+    }
+
 }

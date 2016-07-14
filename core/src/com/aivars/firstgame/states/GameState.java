@@ -8,10 +8,7 @@ import com.aivars.firstgame.utils.BodyFactory;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 
 import static com.aivars.firstgame.Constants.DEBUG_MODE;
@@ -29,6 +26,7 @@ public class GameState extends State {
     private World world;
     private Level level;
     private Array<Body> removableBodies = new Array<Body>();
+    private Array<Joint> removableJoints = new Array<Joint>();
 
     public GameState(Application application) {
         super(application);
@@ -44,6 +42,7 @@ public class GameState extends State {
         world.step(dt, 6, 2);
         level.update(dt);
         disposeBodies();
+        disposeJoints();
     }
 
     @Override
@@ -79,7 +78,21 @@ public class GameState extends State {
         removableBodies.clear();
     }
 
-    public void addRemovableBody(Body body) {
-        this.removableBodies.add(body);
+    private void disposeJoints() {
+        for (int i = 0; i < removableJoints.size; i++) {
+            world.destroyJoint(removableJoints.get(i));
+        }
+        removableJoints.clear();
     }
+
+    public void addRemovableBody(Body body) {
+        if (body != null) {
+            this.removableBodies.add(body);
+        }
+    }
+
+    public void addRemovableJoint(Joint joint) {
+        this.removableJoints.add(joint);
+    }
+
 }

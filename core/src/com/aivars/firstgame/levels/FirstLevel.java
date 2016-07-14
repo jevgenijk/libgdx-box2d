@@ -24,7 +24,7 @@ public class FirstLevel extends Level implements ContactListener, InputProcessor
      * Randomize speed
     * */
 
-    private int bigCircleRadius = 85;
+    private int circleRadius = 85;
     private int ballRadius = 5;
     private int ballOuterLength = 100;
     private int ballInnerLength = 70;
@@ -38,7 +38,7 @@ public class FirstLevel extends Level implements ContactListener, InputProcessor
 
     public FirstLevel(GameState gameState) {
         super(gameState);
-        circle = bodyFactory.createCircle(BodyDef.BodyType.StaticBody, new Vector2(scale(Constants.WIDTH / 2), scale(Constants.HEIGHT / 2)), bigCircleRadius);
+        circle = bodyFactory.createCircle(BodyDef.BodyType.StaticBody, new Vector2(scale(Constants.WIDTH / 2), scale(Constants.HEIGHT / 2)), circleRadius);
         ball = bodyFactory.createCircle(BodyDef.BodyType.DynamicBody, new Vector2(0, 0), ballRadius);
         MassData massData = new MassData();
         massData.I = (float) 1;
@@ -72,10 +72,10 @@ public class FirstLevel extends Level implements ContactListener, InputProcessor
     public void updateUsingTimer() {
         double spikeAngle = Utils.calcRotationAngleInDegrees(circle.getPosition().x, circle.getPosition().y, ball.getPosition().x, ball.getPosition().y);
         int obstacleRandomPosition = (int) (Math.random() * 2 + 1);
-        int x = (int) (circle.getPosition().x * Constants.PPM + (bigCircleRadius + 10) * Math.cos(spikeAngle * Math.PI / 180F));
-        int y = (int) (circle.getPosition().y * Constants.PPM + (bigCircleRadius + 10) * Math.sin(spikeAngle * Math.PI / 180F));
-        int sensorX = (int) (circle.getPosition().x * Constants.PPM + (bigCircleRadius - 10) * Math.cos(spikeAngle * Math.PI / 180F));
-        int sensorY = (int) (circle.getPosition().y * Constants.PPM + (bigCircleRadius - 10) * Math.sin(spikeAngle * Math.PI / 180F));
+        int x = (int) (circle.getPosition().x * Constants.PPM + (circleRadius + 10) * Math.cos(spikeAngle * Math.PI / 180F));
+        int y = (int) (circle.getPosition().y * Constants.PPM + (circleRadius + 10) * Math.sin(spikeAngle * Math.PI / 180F));
+        int sensorX = (int) (circle.getPosition().x * Constants.PPM + (circleRadius - 10) * Math.cos(spikeAngle * Math.PI / 180F));
+        int sensorY = (int) (circle.getPosition().y * Constants.PPM + (circleRadius - 10) * Math.sin(spikeAngle * Math.PI / 180F));
 
         Vector2 obstaclePosition = obstacleRandomPosition == 1 ? new Vector2(scale(x), scale(y)) : new Vector2(scale(sensorX), scale(sensorY));
         Vector2 sensorPosition = obstacleRandomPosition == 1 ? new Vector2(scale(sensorX), scale(sensorY)) : new Vector2(scale(x), scale(y));
